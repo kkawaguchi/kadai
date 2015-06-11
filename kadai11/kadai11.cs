@@ -8,12 +8,10 @@ namespace Kadai
 	{
 		public static void Main()
 		{
-			OutClass1 class1 = new OutClass1();
-			class1.setInputValue("Hello,World.");
+			OutClass1 class1 = new OutClass1("Hellow,orld!");
 			class1.Display();
 			
-			OutClass2 class2 = new OutClass2();
-			class2.setInputValue("Hello,World.");
+			OutClass2 class2 = new OutClass2("Hellow,orld!");
 			class2.Display();
 		}
 	}
@@ -38,11 +36,6 @@ namespace Kadai
 	{
 		protected string inputValue;
 		
-		public void setInputValue(string value)
-		{
-			inputValue = value;
-		}
-		
 		public override void Open()
 		{
 			Console.WriteLine("+-------------+");
@@ -57,16 +50,16 @@ namespace Kadai
 		{
 			Console.WriteLine("|" + inputValue + "|");
 		}
+		
+		public OutClass1(string value)
+		{
+			inputValue = value;
+		}
 	}
 	
 	class OutClass2 : AbstractDisplay
 	{
 		protected string inputValue;
-		
-		public void setInputValue(string value)
-		{
-			inputValue = value;
-		}
 		
 		public override void Open()
 		{
@@ -81,6 +74,11 @@ namespace Kadai
 		public override void Print()
 		{
 			Console.WriteLine("*" + inputValue + "*");
+		}
+		
+		public OutClass2(string value)
+		{
+			inputValue = value;
 		}
 	}
 }
