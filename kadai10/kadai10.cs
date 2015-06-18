@@ -11,8 +11,8 @@ namespace Kadai
 
 		public static void Main()
 		{
-			IInput FileContents = new TextInput();
-			FileContents.Input();
+			IInput fileContents = new TextInput();
+			fileContents.Input();
 			Console.WriteLine(FileContents.GetValue());
 		}
 	}
