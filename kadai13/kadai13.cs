@@ -1,7 +1,5 @@
 using System; 
-using System.IO; 
 using System.Data.SQLite;
-
 
 namespace Kadai
 {
@@ -21,7 +19,7 @@ namespace Kadai
 			
 			while(reader.Read())
 			{
-    			Console.WriteLine("index:{0}  id:{1}  content:{2}", reader["indexno"], reader["id"], reader["content"]);
+				Console.WriteLine("index:{0}  id:{1}  content:{2}", reader["indexno"], reader["id"], reader["content"]);
 			}
 			connection.Close();
 		}
