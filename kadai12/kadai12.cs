@@ -27,23 +27,19 @@ namespace Kadai
 		
 		public void Input(string path)
 		{
-			
-			values = File.ReadAllLines(path);
-			
-			for(int i = 0; i < values.Length; i++)
+			if (File.Exists(path))
 			{
-				Console.WriteLine(values[i]);
+				values = File.ReadAllLines(path);
 			}
-			
+			else
+			{
+				Console.WriteLine("ƒtƒ@ƒCƒ‹‚ª‚ ‚è‚Ü‚¹‚ñ‚Å‚µ‚½");
+			}
 		}
 		
 		public void Output(string path)
 		{
-			
-			for(int i = 0; i < values.Length; i++)
-			{
-				File.AppendAllText(path, values[i] + "\r\n");
-			}
+			File.WriteAllLines(path, values);
 		}
 	}
 }
