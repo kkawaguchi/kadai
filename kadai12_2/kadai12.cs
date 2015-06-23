@@ -16,8 +16,8 @@ namespace Kadai
 		public static void Main()
 		{
 			InputOutput kadai12 = new InputOutput();
-			kadai12.Input("C:/川口/kadai/kadai12_2/test.txt");
-			kadai12.Output("C:/川口/kadai/kadai12_2/test2.txt");
+			kadai12.Input("./test.txt");
+			kadai12.Output("./test2.txt");
 		}
 	}
 
@@ -33,7 +33,7 @@ namespace Kadai
 				value = fileReader.ReadToEnd();
 				fileReader.Close();
 			}
-			catch (System.Exception ex) 
+			catch (System.IO.IOException ex) 
 			{
 				Console.WriteLine("ファイルが読み取れません。" + ex);
 			}
@@ -41,10 +41,16 @@ namespace Kadai
 		
 		public void Output(string path)
 		{
+			try
+			{
 			StreamWriter fileWriter = new StreamWriter(path,false);
 			fileWriter.Write(value);
 			fileWriter.Close();
-			
+			}
+			catch (System.IO.IOException ex) 
+			{
+				Console.WriteLine("ファイルが読み取れません。" + ex);
+			}
 		}
 	}
 }
