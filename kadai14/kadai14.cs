@@ -164,16 +164,32 @@ namespace Kadai
 			
 			if(calendar.GetYoubi() == 0)
 			{
+				for(int i=0;i<calendar.GetYoubi() + 7;i++)
+				{
+					outDate[i] = "--";
+				}
+				for(int i=0;i<calendar.GetNisu();i++)
+				{
+					outDate[calendar.GetYoubi()+i+7] = String.Format("{0, 2}", i+1);
+				}
+				for(int i=0;i<(42-calendar.GetYoubi()-calendar.GetNisu()-7);i++)
+				{
+					outDate[calendar.GetYoubi()+calendar.GetNisu()+i+7] = "--";
+				}
 			}
 			else
 			{
-				for(int i=0;i<GetYoubi();i++)
+				for(int i=0;i<calendar.GetYoubi();i++)
 				{
-					string[i] = "--";
+					outDate[i] = "--";
 				}
-				for(int i=0;i<GetNisu();i++)
+				for(int i=0;i<calendar.GetNisu();i++)
 				{
-					
+					outDate[calendar.GetYoubi()+i] = String.Format("{0, 2}", i+1);
+				}
+				for(int i=0;i<(42-calendar.GetYoubi()-calendar.GetNisu());i++)
+				{
+					outDate[calendar.GetYoubi()+calendar.GetNisu()+i] = "--";
 				}
 			}
 			Console.WriteLine("日　月　火　水　木　金　土");
@@ -181,11 +197,11 @@ namespace Kadai
 			{
 				if((i+1)%7==0)
 				{
-					Console.WriteLine(i);
+					Console.WriteLine(outDate[i]);
 				}
 				else
 				{
-					Console.Write(i);
+					Console.Write(outDate[i]);
 					Console.Write("　");
 				}
 			}
