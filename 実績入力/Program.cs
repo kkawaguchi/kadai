@@ -18,12 +18,8 @@ namespace 勉強会実績入力
             string InParticipant;                                                    //参加者
             string time;
             string meetingID;
-            string pass;
 
-            Console.Write("パス：");　　　　　　　　　 　　　　　　　　　　　　　　//内容入力
-            pass = Console.ReadLine();
-            Console.WriteLine("");
-
+    
             Console.Write("内容：");　　　　　　　　　 　　　　　　　　　　　　　　//内容入力
             descripshon = Console.ReadLine();
             Console.WriteLine("");
@@ -37,14 +33,14 @@ namespace 勉強会実績入力
             Console.WriteLine("");
 
             OleDbConnection conn = new OleDbConnection();
-            conn.ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + pass;
+            conn.ConnectionString = @"Provider=Microsoft.Jet.OLEDB.4.0;Data Source = C:\川口\社内\勉強会\勉強会実績.mdb";
 
             if (descripshon != "" || dayDuty != "")
             {
                 Meeting meeting = new Meeting();
-                meeting.SetDate(DateTime.Parse(date));
-                meeting.SetDescripshon(descripshon);
-                meeting.SetDayDuty(long.Parse(dayDuty));
+                meeting.date=(DateTime.Parse(date));
+                meeting.descripshon = (descripshon);
+                meeting.dayDuty = (int.Parse(dayDuty));
 
                 conn.Open();
 
@@ -65,7 +61,7 @@ namespace 勉強会実績入力
                 foreach (Meeting m in meeting)
                 {
                     
-                    Console.WriteLine(m.GetMeetingID() + "-" + m.GetDate().ToString() + "-" + m.GetDescripshon() + "-" + m.GetDayDuty());
+                    Console.WriteLine(m.meetingID + "-" + m.date.ToString() + "-" + m.descripshon + "-" + m.dayDuty);
                 }
 
                 conn.Close();
@@ -96,19 +92,23 @@ namespace 勉強会実績入力
             Console.WriteLine("");
 
             Participant participant = new Participant(InParticipant);
-            List<long> particiantList = participant.CreateParticiantList();
+            List<int> particiantList = participant.CreateParticiantList();
             Achievement achivement = null;
 
-            foreach(long l in particiantList)
+            foreach(int l in particiantList)
             {
                 achivement = new Achievement();
                 achivement.personID = l;
                 achivement.date = DateTime.Parse(date);
-                achivement.meetingID = long.Parse(meetingID);
-                achivement.time = long.Parse(time);
+                achivement.meetingID = int.Parse(meetingID);
+                achivement.time = int.Parse(time);
+
+                conn.Open();
 
                 AchievementRepository achivementRepository = new AchievementRepository(conn);
                 achivementRepository.Insert(achivement);
+
+                conn.Close();
             }
         }
 
@@ -136,7 +136,7 @@ namespace 勉強会実績入力
                 while (reader.Read())
                 {
                     Person person = new Person();
-                    person.personID = reader.GetInt64(0);
+                    person.personID = reader.GetInt32(0);
                     person.name = reader.GetString(1);
                     person.kana = reader.GetString(2);
 
@@ -159,14 +159,14 @@ namespace 勉強会実績入力
             {
                 String sql;
                 sql = "";
-                sql = "INSERT INTO 会 VALUSE(null,'"+ meeting.GetDate() + "','" + meeting.GetDescripshon() + "'," + meeting.GetDayDuty() + ");";
+                sql = "INSERT INTO 会(日付,内容,司会者) VALUES(#" + meeting.date + "#,'" + meeting.descripshon + "'," + meeting.dayDuty + ");";
 
                 IDbCommand command = this.conn.CreateCommand();
                 command.CommandText = sql;
                 command.ExecuteNonQuery();
             }
 
-            public Meeting Get(long id)
+            public Meeting Get(int id)
             {
                 string sql;
 
@@ -181,35 +181,33 @@ namespace 勉強会実績入力
                 if (reader.Read())
                 {
                     meeting = new Meeting();
-                    meeting.SetDate(reader.GetDateTime(0));
-                    meeting.SetDescripshon(reader.GetString(1));
-                    meeting.SetDayDuty(reader.GetInt64(2));
+                    meeting.date = (reader.GetDateTime(0));
+                    meeting.descripshon = (reader.GetString(1));
+                    meeting.dayDuty = (reader.GetInt32(2));
                 }
 
                 return meeting;
             }
 
-            public Meeting GetNotID(Meeting m)
+            public int GetNotID(Meeting m)
             {
                 string sql;
+                int meetingID;
+                meetingID = 0;
 
                 sql = "";
-                sql = "SELECT 日付,内容,日直 FROM 会 WHERE 内容 = " + m.GetDescripshon() + "AND 日直 = " + m.GetDayDuty() + "AND 日付 = " + m.GetDate() +";";
+                sql = "SELECT 会ID FROM 会 WHERE 内容 = '" + m.descripshon + "' AND 司会者 = " + m.dayDuty + " AND 日付 = #" + m.date +"#;";
 
                 IDbCommand command = this.conn.CreateCommand();
                 command.CommandText = sql;
                 IDataReader reader = command.ExecuteReader();
-                Meeting meeting = null;
 
                 if (reader.Read())
                 {
-                    meeting = new Meeting();
-                    meeting.SetDate(reader.GetDateTime(0));
-                    meeting.SetDescripshon(reader.GetString(1));
-                    meeting.SetDayDuty(reader.GetInt64(2));
+                    meetingID = (reader.GetInt32(0));
                 }
 
-                return meeting;
+                return meetingID;
             }
 
             public List<Meeting> GetAll()
@@ -227,9 +225,24 @@ namespace 勉強会実績入力
                 while (reader.Read())
                 {
                     Meeting m = new Meeting();
-                    m.SetDate(reader.GetDateTime(0));
-                    m.SetDescripshon(reader.GetString(1));
-                    m.SetDayDuty(reader.GetInt64(2));
+                    m.meetingID = (reader.GetInt32(0));
+                    m.date = (reader.GetDateTime(1));
+                    if (DBNull.Value.Equals(reader.GetString(2)))
+                    {
+                        m.descripshon = "";
+                    }
+                    else
+                    {
+                        m.descripshon = (reader.GetString(2));
+                    }
+
+                    if (DBNull.Value.Equals(reader.GetInt32(3)))
+                    {
+                        m.dayDuty = 0;
+                    }else{
+                        m.dayDuty = (reader.GetInt32(3));
+                    }
+                    
 
                     meeting.Add(m);
                 }
@@ -250,7 +263,7 @@ namespace 勉強会実績入力
             {
                 String sql;
                 sql = "";
-                sql = "INSERT INTO 実績 VALUSE(null,'" + achievement.date + "','" + achievement.meetingID + "'," + achievement.personID + "'," + achievement.time + ");";
+                sql = "INSERT INTO 実績(日付,人ID,実績分,会ID) VALUES(#" + achievement.date + "#," + achievement.personID + "," + achievement.time + "," + achievement.achievementID + ");";
 
                 IDbCommand command = this.conn.CreateCommand();
                 command.CommandText = sql;
@@ -262,64 +275,24 @@ namespace 勉強会実績入力
         {
             public string name{ get; set; }
             public string kana{ get; set; }
-            public long personID{ get; set; }
+            public int personID{ get; set; }
         }
 
         class Meeting
         {
-            private string descripshon;　　　//内容
-            private long dayDuty;        　　//日直
-            private DateTime date;
-            private long meetingID;
-
-            public string GetDescripshon()
-            {
-                return this.descripshon;
-            }
-
-            public long GetDayDuty()
-            {
-                return this.dayDuty;
-            }
-
-            public DateTime GetDate()
-            {
-                return this.date;
-            }
-
-            public void SetDescripshon(string descripshon)
-            {
-                this.descripshon = descripshon;
-            }
-
-            public void SetDayDuty(long dayDuty)
-            {
-                this.dayDuty = dayDuty;
-            }
-
-            public void SetDate(DateTime date)
-            {
-                this.date = date;
-            }
-
-            public long GetMeetingID()
-            {
-                return this.meetingID;
-            }
-
-            public void SetMeetingID(long meetingID)
-            {
-                this.meetingID = meetingID;
-            }
+            public string descripshon { get; set; }
+            public int dayDuty { get; set; }
+            public DateTime date { get; set; }
+            public int meetingID { get; set; }
         }
 
         class Achievement
         {
-            public long achievementID { get; set; }
-            public long personID { get; set; }
-            public long meetingID { get; set; }
+            public int achievementID { get; set; }
+            public int personID { get; set; }
+            public int meetingID { get; set; }
             public DateTime date { get; set; }
-            public long time { get; set; }
+            public int time { get; set; }
         }
 
         //人IDの文字列をもらい、リストにして返す。
@@ -332,14 +305,14 @@ namespace 勉強会実績入力
                 this.participant = participant;
             }
 
-            public List<long> CreateParticiantList()
+            public List<int> CreateParticiantList()
             {
                 string[] p = this.participant.Split(',');
-                List<long> particiantList = new List<long>();
+                List<int> particiantList = new List<int>();
 
                 foreach (string personID in p)
                 {
-                    particiantList.Add(long.Parse(personID));
+                    particiantList.Add(int.Parse(personID));
                 }
 
                 return particiantList;
