@@ -227,7 +227,7 @@ namespace 勉強会実績入力
                     Meeting m = new Meeting();
                     m.meetingID = (reader.GetInt32(0));
                     m.date = (reader.GetDateTime(1));
-                    if (DBNull.Value.Equals(reader.GetString(2)))
+                    if (reader["内容"] == DBNull.Value)
                     {
                         m.descripshon = "";
                     }
@@ -236,7 +236,7 @@ namespace 勉強会実績入力
                         m.descripshon = (reader.GetString(2));
                     }
 
-                    if (DBNull.Value.Equals(reader.GetInt32(3)))
+                    if (reader["司会者"] == DBNull.Value)
                     {
                         m.dayDuty = 0;
                     }else{
