@@ -100,7 +100,14 @@ namespace 勉強会実績入力
                 achivement = new Achievement();
                 achivement.personID = l;
                 achivement.date = DateTime.Parse(date);
-                achivement.meetingID = int.Parse(meetingID);
+                if (meetingID == "")
+                {
+                	achivement.meetingID = 0;
+                }
+                else
+                {
+                	achivement.meetingID = int.Parse(meetingID);
+                }
                 achivement.time = int.Parse(time);
 
                 conn.Open();
@@ -263,7 +270,7 @@ namespace 勉強会実績入力
             {
                 String sql;
                 sql = "";
-                sql = "INSERT INTO 実績(日付,人ID,実績分,会ID) VALUES(#" + achievement.date + "#," + achievement.personID + "," + achievement.time + "," + achievement.achievementID + ");";
+                sql = "INSERT INTO 実績(日付,人ID,実績分,会ID) VALUES(#" + achievement.date + "#," + achievement.personID + "," + achievement.time + "," + achievement.meetingID + ");";
 
                 IDbCommand command = this.conn.CreateCommand();
                 command.CommandText = sql;
